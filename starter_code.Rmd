@@ -142,9 +142,14 @@ logistic_reg() %>%
 ```
 
 ```{r}
+
 # Use 1% of data to fit the model
 
+set.seed(10)
+
 x <- initial_split(data = clean, prop = 1/100)
+
+y <- training(x)
 
 logistic_reg() %>%
   set_engine("glm") %>%
@@ -153,8 +158,28 @@ logistic_reg() %>%
   bind_cols(testing(x)) %>%
   metrics(truth = dvote, estimate = .pred_class) %>% 
   gt() %>% 
-    tab_header("Model 2 Evaluation on All Data")
+    tab_header("Model 2 Evaluation on Testing Data")
 
 ```
 
+```{r}
+
+# testing on only training data
+
+
+# Use 1% of data to fit the model
+
+x <- initial_split(data = clean, prop = 1/100)
+
+logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(dvote  ~ gender + party + state + office, data = training(x)) %>%
+  predict(new_data = training(x)) %>%
+  bind_cols(training(x)) %>%
+  metrics(truth = dvote, estimate = .pred_class) %>% 
+  gt() %>% 
+    tab_header("Model 2 Evaluation on All Data")
+
+
+```
 
